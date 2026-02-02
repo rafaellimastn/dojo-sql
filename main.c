@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 const long BUFFER_SIZE = 1000;
 const int NUMBER_CITIES = 10;
@@ -39,7 +40,7 @@ int main(int argc, char *argv[]) {
             i++;
             current++;
         }
-        cities[j].city = current_string;
+        strcpy(cities[j].city, current_string);
         printf("Cidade %d: %s\n", (j + 1) , cities[j].city); 
         current++;
     }
