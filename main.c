@@ -4,56 +4,101 @@
 
 const long BUFFER_SIZE = 1000;
 const int NUMBER_CITIES = 10;
-void clear_array(char *array, int size);
-
 typedef struct {
     char *city;
     int counter;
 } city_counter;
 
-int main(int argc, char *argv[]) {
-    char buffer[BUFFER_SIZE];
-    city_counter cities[NUMBER_CITIES];
+void set_array_cities_zero(city_counter *arr, int size);
+int verify_city(char *city, city_counter *array_cities) ;
+int add_to_counter(city_counter *arr, int size ,char *string);
+int get_empty_index(city_counter *arr, int size);;
 
+int main() {
+    char buffer[BUFFER_SIZE];
+    city_counter *cities = (city_counter *) malloc(NUMBER_CITIES * sizeof(city_counter));
+    set_array_cities_zero(cities, NUMBER_CITIES);
+    
     FILE *read_file = fopen("ignore/cidades.txt", "r");
     if (read_file == NULL) {
         perror("Erro ao abrir o arquivo de leitura.");
         return 1;
     }
     
-    // ler uma linha e comparar se a cidade esta ou nao no array
-    size_t bytes_read;
     int current, first; current = first = 0;
     char current_string[20];
-    
-    bytes_read = fread(buffer, 1, BUFFER_SIZE, read_file);
-    for (int j = 0; j < NUMBER_CITIES; j++) {
-        int i = 0;
-        clear_array(current_string, 20);
-        while(buffer[current] != '\n') {
-            if(current > bytes_read) {
-                break;
+
+    size_t bytes_read;
+    while((bytes_read = fread(buffer, sizeof(char), BUFFER_SIZE, read_file)) > 0) {
+        for (int j = 0; j < bytes_read; j++) {
+            int i = 0;
+            // limpar string temporaria
+            memset(current_string, 0, sizeof(current_string));
+            // passa o valor da linha atual para a string temporaria
+            while(buffer[current] != '\n') {
+                if(current >= bytes_read) {
+                    break;
+                }
+                // passar o valor da linha para a string temporaria
+                current_string[i] = buffer[current];
+                i++;
+                current++;
             }
-            // passar o valor da linha para o array
-
-            current_string[i] = buffer[current];
-            i++;
-            current++;
+             //comparar se a cidade esta ou nao no array
+            if (verify_city(current_string, cities) != -1) {
+                // ja foi contada pelo menos uma vez
+                int index = add_to_counter(cities, NUMBER_CITIES, current_string);
+                printf("Cidade: %s e Contador: %d\n", current_string, cities[index].counter); 
+            } else {
+                // primeiro vez q a cidade aparece
+                int empty_index = get_empty_index(cities, NUMBER_CITIES );
+                cities[empty_index].city = (char*) malloc(strlen(current_string) * sizeof(char));
+                strcpy(cities[empty_index].city, current_string);
+                cities[empty_index].counter++;
+                printf("Cidade: %s e Contador: %d\n", current_string, cities[empty_index].counter); 
+            }
+            current++;          
+            if(current > bytes_read) {
+                    break;
+            }
         }
-        strcpy(cities[j].city, current_string);
-        printf("Cidade %d: %s\n", (j + 1) , cities[j].city); 
-        current++;
     }
-
-    // se estiver: some um ao contador dessa cidade
-
-    // se nao: adicione a cidade ao array e crie um contador p esta cidade
-
     return 0;
 }
 
-void clear_array(char *array, int size) {
-    for (int i = 0;  i < size; i++)  {
-        array[i] = 0;
+int get_empty_index(city_counter *arr, int size) {
+    for(int i = 0; i < size; i++) {
+        if(arr[i].counter == 0) {
+            return i;
+        }
     }
+    return -1;
+}
+
+int add_to_counter(city_counter *arr, int size ,char *string) {
+    for (int i = 0; i < size; i++) {
+        if(strcmp(arr[i].city, string) == 0) {
+            arr[i].counter++;
+            return i;
+        }
+    }
+}
+
+void set_array_cities_zero(city_counter *arr, int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i].city = "";
+        arr[i].counter = 0;
+    }
+}
+
+int verify_city(char *city, city_counter *array_cities) {
+
+    for (int i = 0; i < NUMBER_CITIES; i++) {
+        if(strcmp(city, array_cities[i].city) == 0) {
+            // ja esta no array
+            return i;
+        }
+    }
+    // nao esta no array
+    return -1;
 }
