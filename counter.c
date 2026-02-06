@@ -24,7 +24,7 @@ int main() {
     memset(cities, 0, sizeof(city_counter));
 
     
-    FILE *read_file = fopen("ignore/table.txt", "r");
+    FILE *read_file = fopen("data/table.txt", "r");
     if (read_file == NULL) {
         perror("Erro ao abrir o arquivo de leitura.");
         return 1;
@@ -113,7 +113,6 @@ city_counter* remove_index(city_counter *src, int new_size, int index) {
             memmove(&src[new_index], &temp[i], sizeof(city_counter));
             new_index++;
         } else {
-
             continue;
         }
     }

@@ -9,7 +9,7 @@ char *string_copy(char *string);
 FILE *build_file(char **arr, int arr_size);
 
 int main() {
-    FILE *read_file = fopen("ignore/cities.txt", "r");
+    FILE *read_file = fopen("data/municipios.txt", "r");
     if (read_file == NULL) {
         perror("Não foi possivel abrir o arquivo.");
     }
@@ -44,13 +44,13 @@ int main() {
 
 
 FILE *build_file(char **arr, int arr_size) {
-    FILE *write_file = fopen("ignore/table.txt", "w");
+    FILE *write_file = fopen("data/table.txt", "w");
     if (write_file == NULL) {
         perror("Não foi possivel abrir o arquivo.");
     }
 
     srand(time(NULL));
-    for(int i = 0; i < 1e3; i++) {
+    for(int i = 0; i < 1e6; i++) {
         int r = rand() % arr_size;
         fprintf(write_file, "%s", arr[r]);
     }
